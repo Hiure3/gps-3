@@ -1,0 +1,33 @@
+name: Build Simples EXE
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Configurar Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Instalar Dependências
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Gerar Executável Único (--onefile)
+      run: |
+        pyinstaller --noconfirm --onefile --windowed --collect-all customtkinter --collect-all tkintermapview app.py
+
+    - name: Enviar Artefato ZIP
+      uses: actions/upload-artifact@v4
+      with:
+        name: WazePlus-Simples-EXE
+        path: dist/app.exe
